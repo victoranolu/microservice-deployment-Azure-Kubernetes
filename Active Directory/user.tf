@@ -15,11 +15,11 @@ data "azurerm_subscription" "sub-01" {
 }
 
 resource "azurerm_role_definition" "role_def" {
-  name = ""
+  name               = ""
   role_definition_id = "0ab0b1a8-8aac-4efd-b8c2-3ee1fb270be8"
-  scope       = data.azurerm_subscription.sub-O1.id
-  description = "This is a custom role created via Terraform"
-  
+  scope              = data.azurerm_subscription.sub-O1.id
+  description        = "This is a custom role created via Terraform"
+
 
   permissions {
     actions     = ["Microsoft.ContainerService/managedClusters/runcommand/action", "Microsoft.ContainerService/managedClusters/read", "Microsoft.ContainerService/managedClusters/accessProfiles/listCredential/action", "Microsoft.ContainerService/managedClusters/listClusterAdminCredential/action"] # These actions list, manage, run users issues on cluster
@@ -33,9 +33,9 @@ resource "azurerm_role_definition" "role_def" {
 }
 
 resource "azurerm_role_assignment" "role_for_ak8" {
-  scope              = data.azurerm_subscription.sub-01.id
+  scope                = data.azurerm_subscription.sub-01.id
   role_definition_name = "Azure Kubernetes Service Cluster Admin Role"
-  role_definition_id = azurerm_role_definition.role_def.role_definition_id
-  principal_id       = azuread_user.usr01.id
-  principal_type = "User"
+  role_definition_id   = azurerm_role_definition.role_def.role_definition_id
+  principal_id         = azuread_user.usr01.id
+  principal_type       = "User"
 }

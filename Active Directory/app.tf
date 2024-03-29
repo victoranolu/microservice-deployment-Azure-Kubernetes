@@ -13,5 +13,5 @@ resource "azuread_application_federated_identity_credential" "fed_cred" {
   audiences      = ["api://AzureADTokenExchange"]
   issuer         = "https://token.actions.githubusercontent.com"
   subject        = "repo:victoranolu/microservice-deployment-Azure-Kubernetes:main"
-} 
+}
 
