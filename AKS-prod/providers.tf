@@ -11,7 +11,8 @@ terraform {
 provider "azurerm" {
 
   features {}
-  use_oidc = true # This is only required when the User, Service Principal, or Identity running Terraform lacks the permissions to register Azure Resource Providers.
+  use_oidc = true
+
 }
 
 provider "azuread" {}
