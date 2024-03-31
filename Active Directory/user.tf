@@ -1,6 +1,6 @@
 # Creating a user from the root account
 resource "azuread_user" "usr01" {
-  user_principal_name = "afactor05@gmail.com"
+  user_principal_name = "WS@${data.azuread_domains.usr_name.domains.0.domain_name}"
   display_name        = "V. Anolu"
   mail_nickname       = "vscode-user"
   city                = "lagos"
@@ -12,6 +12,10 @@ resource "azuread_user" "usr01" {
 
 # Assigning an Azure Kubernetes Cluster Admin role to the user on the Azure subscription 
 data "azurerm_subscription" "sub-01" {
+}
+
+data "azuread_domains" "usr_name" {
+  only_initial = true
 }
 
 resource "azurerm_role_definition" "role_def" {
