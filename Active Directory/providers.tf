@@ -17,10 +17,10 @@ provider "azurerm" {
 # Configure backend and azure blob storage  
 terraform {
   backend "azurerm" {
-    resource_group_name  = "StorageAccount-ResourceGroup"
-    storage_account_name = "az_rbac_security_storage_29_03_24"
-    container_name       = "tfstate"
-    key                  = "prod.terraform.tfstate"
+    resource_group_name  = var.storage_resource_group_name
+    storage_account_name = var.storage_account_name 
+    container_name       = var.container_name
+    key                  = var.key
     use_oidc             = true
   }
 }
@@ -36,3 +36,4 @@ terraform {
 }
 
 provider "azuread" {}
+

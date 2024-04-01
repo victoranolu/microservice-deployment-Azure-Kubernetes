@@ -45,8 +45,7 @@ resource "azurerm_kubernetes_cluster" "WS_cluster" {
   }
 
   identity {
-    type         = "UserAssigned"
-    identity_ids = azuread_user.usr01.id
+    type         = "SystemAssigned"
   }
 
   # setting an automated window upgrade

@@ -65,3 +65,19 @@ variable "fed_cred_issuer" {
 variable "fed_cred_subject" {
   type = string
 }
+
+variable "storage_account_name" {
+  type = string
+}
+
+variable "storage_resource_group_name" {
+  type = string
+}
+
+variable "container_name" {
+  type = string
+}
+
+variable "key" {
+  type = string
+}

@@ -14,5 +14,3 @@ provider "azurerm" {
   use_oidc = true
 
 }
-
-provider "azuread" {}

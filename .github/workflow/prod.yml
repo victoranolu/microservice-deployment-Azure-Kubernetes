@@ -1,8 +1,196 @@
 name: Weave Sock Shop microservice deployment to Azure Kubernetes Service
 
-on: 
+on:
   push:
     branches:
       - main
 
-permissions: 
+permissions:
+  id-token: write
+  issues: write
+  contents: read
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu:latest
+    steps:
+      # Check the git repository
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Installing terraform on the runner
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.7.5"
+
+      # Login to the Azure acoount
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+
+      # Test Azure CLI
+      - name: Run az commands
+        run: |
+          az show account
+
+      # Terraform format code
+      - name: Terraform fmt
+        id: fmt
+        working-directory: ./Active Directory
+        run: terraform fmt --check
+        continue-on-error: true
+
+      # Terraform initialization
+      - name: Terraform init
+        id: init
+        env:
+          STORAGE_ACCOUNT: ${{ secret.STORAGE_ACCOUNT }}
+          CONTAINER_NAME: ${{ secret.CONTAINER.NAME }}
+          RESOURCE_GROUP: ${{ secret.RESOURCE_GROUP }}
+          ARM_CLIENT_ID: ${{ secret.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ secret.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secret.SUBSCRIPTION_ID }}
+        run: terraform init -backend-config="storage_account_name=$STORAGE_ACCOUNT" -backend-config="container_name=$CONTAINER_NAME" -backend-config="resource_group_name=$RESOURCE_GROUP"
+
+
+      # Terraform validation
+      - name: Terraform validate
+        id: validate
+        if: success() || failure()
+        env:
+          ARM_CLIENT_ID: ${{ secret.CLIENT_ID }}
+          ARM_TENANT_ID: ${{ secret.TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secret.SUBSCRIPTION_ID }}
+        run: terraform validate -no-color
+
+
+      # Run a Terraform plan
+      - name: Terraform plan
+        id: plan
+        run: terraform plan -no-color
+        continue-on-error: true
+
+
+      # Terraform Apply
+      - name: Terraform apply
+        id: apply
+        run: terraform apply --auto-approve
+        continue-on-error: true
+
+
+      # Clean up
+      #- name: Terraform Destroy
+        #id: destroy
+        #run: terraform destroy --auto-approve
+        #continue-on-error: true
+
+
+
+
+   ############ Deploy the Azure Kubernetes Service and other resources required to run with the Kubernetes  #######################
+
+
+
+      # Terraform format code
+      - name: Terraform fmt
+        id: fmt
+        working-directory: ./AKS-prod
+        run: terraform fmt --check
+        continue-on-error: true
+
+      # Terraform initialization
+      - name: Terraform init
+        id: init
+        env:
+          STORAGE_ACCOUNT: ${{ secret.STORAGE_ACCOUNT }}
+          CONTAINER_NAME: ${{ secret.CONTAINER.NAME }}
+          RESOURCE_GROUP: ${{ secret.RESOURCE_GROUP }}
+          ARM_CLIENT_ID: ${{ secret.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ secret.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secret.SUBSCRIPTION_ID }}
+        run: terraform init -backend-config="storage_account_name=$STORAGE_ACCOUNT" -backend-config="container_name=$CONTAINER_NAME" -backend-config="resource_group_name=$RESOURCE_GROUP"
+
+
+      # Terraform validation
+      - name: Terraform validate
+        id: validate
+        if: success() || failure()
+        env:
+          ARM_CLIENT_ID: ${{ secret.CLIENT_ID }}
+          ARM_TENANT_ID: ${{ secret.TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secret.SUBSCRIPTION_ID }}
+        run: terraform validate -no-color
+
+
+      # Run a Terraform plan
+      - name: Terraform plan
+        id: plan
+        run: terraform plan -no-color
+        continue-on-error: true
+
+
+      # Terraform Apply
+      - name: Terraform apply
+        id: apply
+        run: terraform apply --auto-approve
+        continue-on-error: true
+
+
+      # Clean up
+     # - name: Terraform Destroy
+     #   id: destroy
+      #  run: terraform destroy --auto-approve
+      #  continue-on-error: true
+
+
+############################# Deploy Weave Sock Shop on Kubernetes Cluster using the kubernetes provider ####################################################################
+
+
+
+
+     # Terraform format code
+      - name: Terraform fmt
+        id: fmt
+        run: terraform fmt --check
+        continue-on-error: true
+
+      # Terraform initialization
+      - name: Terraform init
+        id: init
+        run: terraform init
+
+
+      # Terraform validation
+      - name: Terraform validate
+        id: validate
+        if: success() || failure()
+        run: terraform validate -no-color
+
+
+      # Run a Terraform plan
+      - name: Terraform plan
+        id: plan
+        run: terraform plan -no-color
+        continue-on-error: true
+
+
+      # Terraform Apply
+      - name: Terraform apply
+        id: apply
+        run: terraform apply --auto-approve
+        continue-on-error: true
+
+
+       # Clean up
+     # - name: Terraform Destroy
+      #  id: destroy
+      #  run: terraform destroy --auto-approve
+      #  continue-on-error: true
+
+
+ 
