@@ -55,6 +55,16 @@ resource "azurerm_network_security_group" "net_sec_grp" {
     source_port_range      = "443"
     destination_port_range = "443"
   }
+
+  security_rule {
+    name                   = "${var.aks_cluster_name}-sg02"
+    priority               = 100
+    direction              = "Outbound"
+    access                 = "Allow"
+    protocol               = "Tcp"
+    source_port_range      = "443"
+    destination_port_range = "443"
+  }
 }
 
 resource "azurerm_subnet_network_security_group_association" "sub_net_sec_grp" {
